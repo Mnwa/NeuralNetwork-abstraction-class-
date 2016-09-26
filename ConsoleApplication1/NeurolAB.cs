@@ -29,7 +29,7 @@ namespace NeuralNetwork
 
 
         /// <summary>
-        /// Можно установить или получить значение input и output самому, а можно пополнить его через метод Add
+        /// Можно установить или получить значение input самому, а можно пополнить его через метод Add
         /// </summary>
         public InputType[][] Input
         {
@@ -43,6 +43,9 @@ namespace NeuralNetwork
             }
         }
 
+        /// <summary>
+        /// Можно установить или получить значение output самому, а можно пополнить его через метод Add
+        /// </summary>
         public InputType[][] Output
         {
             get
