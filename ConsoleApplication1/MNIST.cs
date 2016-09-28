@@ -37,8 +37,10 @@ namespace NeuralNetwork
                 {
                     for (int j = 0; j < DIM_SIZE; j++)
                     {
-                        res[i * DIM_SIZE + j] =
-                            Convert.ToDouble(Pixels[j][i]);
+                        if (Pixels[j][i] > 30)
+                            res[i * DIM_SIZE + j] = 255;
+                        else
+                            res[i * DIM_SIZE + j] = 0;
                     }
                 }
 

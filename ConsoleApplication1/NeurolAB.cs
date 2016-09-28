@@ -10,6 +10,7 @@ using Encog.ML.Data.Basic;
 using Encog.ML.Train;
 using Encog.Neural.Networks;
 using Encog.Neural.Networks.Layers;
+using Encog.Neural.Networks.Training.Lma;
 using Encog.Neural.Networks.Training.Propagation.Resilient;
 using Encog.Persist;
 
@@ -76,7 +77,7 @@ namespace NeuralNetwork
                 List<double[]> nowInMatrixInput = new List<double[]>();
                 List<double[]> nowInMatrixOutput = new List<double[]>();
                 double[] inputDouble = Array.ConvertAll(input, (x) => (double)(dynamic)x);
-                double[] outputDouble = Array.ConvertAll(input, (x) => (double)(dynamic)x);
+                double[] outputDouble = Array.ConvertAll(output, (x) => (double)(dynamic)x);
 
                 foreach (double[] one in this.input)
                 {
@@ -175,9 +176,14 @@ namespace NeuralNetwork
                     Debug.WriteLineIf(debug, train.Error);
                 } while (train.Error >= maxError);
             }
+            catch (OutOfMemoryException e)
+            {
+                Debug.WriteIf(debug, e);
+                Environment.Exit(e.HResult);
+            }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Debug.WriteLineIf(debug, e.Message);
                 return false;
             }
             return true;
@@ -194,10 +200,45 @@ namespace NeuralNetwork
             {
                 IMLDataSet trainingSet = new BasicMLDataSet(input, output);
                 IMLTrain train = new ResilientPropagation(network, trainingSet);
+                
                 for (int i = 0; i < iterations; i++)
                 {
                     train.Iteration();
                     Debug.WriteLineIf(debug, train.Error);
+                }
+            }
+            catch (OutOfMemoryException e)
+            {
+                Debug.WriteIf(debug, e);
+                Environment.Exit(e.HResult);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Метод для обучения сети
+        /// </summary>
+        /// <param name="iterations">Количество повторений при обучении сети</param>
+        /// <param name="maxError">Макслимальная погрешность сети</param>
+        /// <param name="debug">Когда True, выводит значения в Debug</param>
+        /// <returns>Если обучение пройдено успешно, возвращает True</returns>
+        public bool Learn(int iterations, double maxError, bool debug = true)
+        {
+            try
+            {
+                IMLDataSet trainingSet = new BasicMLDataSet(input, output);
+                IMLTrain train = new ResilientPropagation(network, trainingSet);
+
+                for (int i = 0; i < iterations; i++)
+                {
+                    train.Iteration();
+                    Debug.WriteLineIf(debug, train.Error);
+                    if (train.Error <= maxError) break;
                 }
             }
             catch (Exception e)
@@ -218,7 +259,7 @@ namespace NeuralNetwork
         {
             try
             {
-                network = (BasicNetwork)(Encog.Persist.EncogDirectoryPersistence.LoadObject(new FileInfo(filename)));
+                network = (BasicNetwork)(EncogDirectoryPersistence.LoadObject(new FileInfo(filename)));
             }
             catch (Exception e)
             {
@@ -239,6 +280,11 @@ namespace NeuralNetwork
             try
             {
                 EncogDirectoryPersistence.SaveObject(new FileInfo(filename), network);
+            }
+            catch(FileLoadException e)
+            {
+                Debug.WriteLineIf(debug, "Ошибка сохранения файла: " + e);
+                return false;
             }
             catch (Exception e)
             {
@@ -288,6 +334,7 @@ namespace NeuralNetwork
         /// <param name="Neurals">Массив с нейронами</param>
         public NeuralNetworkAB(int[] Neurals)
         {
+            
             outputCount = Neurals.Last();
             network.AddLayer(new BasicLayer(null, true, Neurals[0]));
             for (int i = 1; i < Neurals.Length - 1; i++)
@@ -304,7 +351,14 @@ namespace NeuralNetwork
         /// <param name="filename">Имя файла</param>
         public NeuralNetworkAB(string filename)
         {
-            network = (BasicNetwork)(EncogDirectoryPersistence.LoadObject(new FileInfo(filename)));
+            try
+            {
+                network = (BasicNetwork)(EncogDirectoryPersistence.LoadObject(new FileInfo(filename)));
+            }
+            catch(Exception e)
+            {
+                Debug.WriteLine(e);
+            }
         }
     }
 }
