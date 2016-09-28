@@ -10,7 +10,6 @@ using Encog.ML.Data.Basic;
 using Encog.ML.Train;
 using Encog.Neural.Networks;
 using Encog.Neural.Networks.Layers;
-using Encog.Neural.Networks.Training.Lma;
 using Encog.Neural.Networks.Training.Propagation.Resilient;
 using Encog.Persist;
 
