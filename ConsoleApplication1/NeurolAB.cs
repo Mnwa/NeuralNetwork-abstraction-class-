@@ -101,41 +101,14 @@ namespace NeuralNetwork
 
         }
 
-
         /// <summary>
         /// Метод для запуска нейронной сети
         /// </summary>
         /// <param name="input">Входные данные</param>
+        /// <param name="round">Когда True, округляет значение</param>
         /// <param name="debug">Когда True, выводит значения в Debug</param>
         /// <returns>Возвращает массив double[], после обработки сети</returns>
-        public double[] Run(InputType[] input, bool debug = true)
-        {
-            IMLData output;
-            List<double> result = new List<double>();
-            try
-            {
-                BasicMLData runUp = new BasicMLData(Array.ConvertAll(input, (x) => (double)(dynamic)x));
-                output = network.Compute(runUp);
-                for (int i = 0; i < outputCount; i++)
-                {
-                    result.Add(Convert.ToDouble(output[i]));
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLineIf(debug, e);
-                return null;
-            }
-            return result.ToArray();
-        }
-
-        /// <summary>
-        /// Метод для запуска нейронной сети
-        /// </summary>
-        /// <param name="input">Входные данные</param>
-        /// <param name="debug">Когда True, выводит значения в Debug</param>
-        /// <returns>Возвращает массив double[], после обработки сети</returns>
-        public double[] Run(double[] input, bool debug = true)
+        public double[] Run(double[] input, bool round = true, bool debug = true)
         {
             IMLData output;
             List<double> result = new List<double>();
@@ -145,7 +118,10 @@ namespace NeuralNetwork
                 output = network.Compute(runUp);
                 for (int i = 0; i < outputCount; i++)
                 {
-                    result.Add(Convert.ToDouble(output[i]));
+                    if (round)
+                        result.Add(Math.Round(Convert.ToDouble(output[i])));
+                    else
+                        result.Add(Convert.ToDouble(output[i]));
                 }
             }
             catch (Exception e)
@@ -156,6 +132,36 @@ namespace NeuralNetwork
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Метод для запуска нейронной сети
+        /// </summary>
+        /// <param name="input">Входные данные</param>
+        /// <param name="round">Когда True, округляет значение</param>
+        /// <param name="debug">Когда True, выводит значения в Debug</param>
+        /// <returns>Возвращает массив double[], после обработки сети</returns>
+        public double[] Run(InputType[] input,bool round = true, bool debug = true)
+        {
+            IMLData output;
+            List<double> result = new List<double>();
+            try
+            {
+                BasicMLData runUp = new BasicMLData(Array.ConvertAll(input, (x) => (double)(dynamic)x));
+                output = network.Compute(runUp);
+                for (int i = 0; i < outputCount; i++)
+                {
+                    if(round)
+                        result.Add(Math.Round(Convert.ToDouble(output[i])));
+                    else
+                        result.Add(Convert.ToDouble(output[i]));
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLineIf(debug, e);
+                return null;
+            }
+            return result.ToArray();
+        }
 
         /// <summary>
         /// Метод для обучения сети
