@@ -58,6 +58,37 @@ namespace NeuralNetwork
             }
         }
 
+        /// <summary>
+        /// Данный метод добавляет массив данных для обучения нейронной сети
+        /// </summary>
+        /// <param name="input">Входные данные для обучения</param>
+        /// <param name="output">Идеальные значения, которые сеть должна давать на выходе</param>
+        /// <param name="debug">Когда True, выводит значения в Debug</param>
+        public void Add(double[] input, double[] output, bool debug = true)
+        {
+            try
+            {
+                if (output.Length != outputCount) throw new Exception("Количество выходных нейронов не равно количеству элементов во входном параметре");
+                List<double[]> nowInMatrixInput = this.input.ToList();
+                List<double[]> nowInMatrixOutput = this.output.ToList();
+
+                nowInMatrixInput.Add(input);
+                nowInMatrixOutput.Add(output);
+                this.input = nowInMatrixInput.ToArray();
+                this.output = nowInMatrixOutput.ToArray();
+            }
+            catch (OutOfMemoryException e)
+            {
+                Debug.WriteIf(debug, e);
+                Environment.Exit(e.HResult);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLineIf(!debug, e);
+                Console.WriteLine(e);
+            }
+
+        }
 
         /// <summary>
         /// Данный метод добавляет массив данных для обучения нейронной сети
@@ -73,25 +104,20 @@ namespace NeuralNetwork
             try
             {
                 if (output.Length != outputCount) throw new Exception("Количество выходных нейронов не равно количеству элементов во входном параметре");
-                List<double[]> nowInMatrixInput = new List<double[]>();
-                List<double[]> nowInMatrixOutput = new List<double[]>();
+                List<double[]> nowInMatrixInput = this.input.ToList();
+                List<double[]> nowInMatrixOutput = this.output.ToList();
                 double[] inputDouble = Array.ConvertAll(input, (x) => (double)(dynamic)x);
                 double[] outputDouble = Array.ConvertAll(output, (x) => (double)(dynamic)x);
 
-                foreach (double[] one in this.input)
-                {
-                    double[] elem = Array.ConvertAll(one, (x) => (double)(dynamic)x);
-                    nowInMatrixInput.Add(elem);
-                }
-                foreach (double[] one in this.output)
-                {
-                    double[] elem = Array.ConvertAll(one, (x) => (double)(dynamic)x);
-                    nowInMatrixOutput.Add(elem);
-                }
                 nowInMatrixInput.Add(inputDouble);
                 nowInMatrixOutput.Add(outputDouble);
                 this.input = nowInMatrixInput.ToArray();
                 this.output = nowInMatrixOutput.ToArray();
+            }
+            catch (OutOfMemoryException e)
+            {
+                Debug.WriteIf(debug, e);
+                Environment.Exit(e.HResult);
             }
             catch (Exception e)
             {
@@ -246,6 +272,11 @@ namespace NeuralNetwork
                     if (train.Error <= maxError) break;
                 }
             }
+            catch (OutOfMemoryException e)
+            {
+                Debug.WriteIf(debug, e);
+                Environment.Exit(e.HResult);
+            }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
@@ -264,13 +295,14 @@ namespace NeuralNetwork
         {
             try
             {
-                network = (BasicNetwork)(EncogDirectoryPersistence.LoadObject(new FileInfo(filename)));
+                network = (BasicNetwork)EncogDirectoryPersistence.LoadObject(new FileInfo(filename));
             }
             catch (Exception e)
             {
                 Debug.WriteLineIf(debug, e);
                 return false;
             }
+            Debug.WriteLineIf(debug, "Нейронная сеть успешно загружена.");
             return true;
         }
 
@@ -296,6 +328,7 @@ namespace NeuralNetwork
                 Debug.WriteLineIf(debug, e);
                 return false;
             }
+            Debug.WriteLineIf(debug, "Нейронная сеть успешно сохранена.");
             return true;
         }
 
@@ -354,16 +387,17 @@ namespace NeuralNetwork
         /// Инициализация сети из файла
         /// </summary>
         /// <param name="filename">Имя файла</param>
-        public NeuralNetworkAB(string filename)
+        public NeuralNetworkAB(string filename,bool debug = true)
         {
             try
             {
-                network = (BasicNetwork)(EncogDirectoryPersistence.LoadObject(new FileInfo(filename)));
+                network = (BasicNetwork)EncogDirectoryPersistence.LoadObject(new FileInfo(filename));
             }
             catch(Exception e)
             {
-                Debug.WriteLine(e);
+                Debug.WriteLineIf(debug, e);
             }
+            Debug.WriteLineIf(debug, "Нейронная сеть успешно загружена.");
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections.Generic;
 
 
 
@@ -12,17 +12,24 @@ namespace NeuralNetwork
         {
             
             MNIST DB = new MNIST();
-            DB.LoadDB("", 1000, 10000);
+            DB.LoadDB("", 60000, 10000);
             NeuralNetworkAB<byte> A = new NeuralNetworkAB<byte>(new int[] { 784, 793, 10 });//3920
             foreach (DigitImage i in DB.TrainingImages)
             {
-                short[] output = new short[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                double[] output = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                 output[i.Label] = 1;
                 A.Add(i.RawImage, output);
             }
-            A.Learn(0.001);
-            Console.WriteLine(DB.TrainingImages[100].ToString());
-            double[] result = A.Run(DB.TrainingImages[100].RawImage);
+            A.Learn(1E-4);
+            A.Save("mnistDB.data");
+            Console.WriteLine(DB.TrainingImages[300].ToString());
+            double[] result = A.Run(DB.TrainingImages[300].RawImage);
+            List<double> res = new List<double>();
+            for(int i = 0; i < result.Length; i++)
+            {
+                if (result[i] == 1)
+                    res.Add(i);
+            }
             /*
             double[][] XOR_I = new double[4][] {
                 new double[2] { 255, 255},
@@ -42,7 +49,7 @@ namespace NeuralNetwork
             A.Learn(0.01);
             
             double[] result = A.Run(new double[2] { 200, 200 });*/
-            Console.WriteLine(string.Join(" , ", result));
+            Console.WriteLine(string.Join(" , ", res.ToArray()));
             Console.ReadKey();
         }
     }

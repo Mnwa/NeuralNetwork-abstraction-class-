@@ -65,12 +65,10 @@ namespace NeuralNetwork
             {
                 for (int j = 0; j < 28; j++)
                 {
-                    if (pixels[i][j] == 0)
+                    if (pixels[i][j] < 30)
                         s += " "; //white
-                    else if (pixels[i][j] == 255)
-                        s += "0"; //black
                     else
-                        s += "."; //gray
+                        s += "."; //black
                 }
                 s += "\n";
             }
