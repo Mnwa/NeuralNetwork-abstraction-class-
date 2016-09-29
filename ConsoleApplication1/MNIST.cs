@@ -141,11 +141,11 @@ namespace NeuralNetwork
                     {
                         for (int j = 0; j < 28; j++)
                         {
-                            var b = (byte)brImages.ReadByte();
+                            byte b = brImages.ReadByte();
 
                             if (b > 30)
                             {
-                                pixles[i][j] = 254; //(byte)brImages.ReadByte();
+                                pixles[i][j] = 255; //(byte)brImages.ReadByte();
                             }
                             else
                             {
@@ -170,7 +170,7 @@ namespace NeuralNetwork
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message + " 0");
+                Console.WriteLine(ex.Message);
             }
         }
     }
@@ -208,7 +208,7 @@ namespace NeuralNetwork
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message + " 1");
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
