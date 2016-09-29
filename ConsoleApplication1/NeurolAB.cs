@@ -84,8 +84,7 @@ namespace NeuralNetwork
             }
             catch (Exception e)
             {
-                Debug.WriteLineIf(!debug, e);
-                Console.WriteLine(e);
+                Debug.WriteLineIf(debug, e);
             }
 
         }
@@ -121,8 +120,7 @@ namespace NeuralNetwork
             }
             catch (Exception e)
             {
-                Debug.WriteLineIf(!debug, e);
-                Console.WriteLine(e);
+                Debug.WriteLineIf(debug, e);
             }
 
         }
