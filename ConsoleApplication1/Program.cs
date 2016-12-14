@@ -10,9 +10,67 @@ namespace NeuralNetwork
     {
         static void Main(string[] args)
         {
-            
+
+            //Тестовые данные
+            double[][] XOR_Input = new double[4][]
+            {
+                new double[2]{0, 0},
+                new double[2]{1, 0},
+                new double[2]{0, 1},
+                new double[2]{1, 1}
+            };
+            double[][] XOR_Output = new double[4][]
+            {
+                new double[1]{0},
+                new double[1]{1},
+                new double[1]{1},
+                new double[1]{0}
+            };
+
+            //Создание нейронной сети с одним скрытым слоем: 4            
+            NeuralNetworkAB<double> testNetwork = new NeuralNetworkAB<double>(new int[] { 2, 4, 1 });
+
+            // SetValue - функция для преобразования входных значений
+            testNetwork.SetValue = (x) => x;
+            // GetValue - функция для преобразования выходных значений
+            testNetwork.GetValue = (y) =>  y;      
+                                       
+            // Загружает все тестовые данные в сеть             
+            testNetwork.Input = XOR_Input;
+            testNetwork.Output = XOR_Output;
+
+            // Данный код так же подгружает все тестовые данные в нейронную сеть
+            /*
+            for(int i = 0; i < XOR_Input.Length; i++)
+            { 
+                // Метод Add так же подгружает данные в сеть, но по одно одному массиву за раз
+                testNetwork.Add(XOR_Input[i], XOR_Output[i]);
+            }
+            */
+
+            // Обучаем сеть (если обучение прошло без ошибок, вернёт true)
+            bool learned = testNetwork.Learn(1E-5);
+            if (learned)
+            {
+                Console.WriteLine(string.Join(" , ", testNetwork.Run(XOR_Input[2])));
+                bool saved = testNetwork.Save("test");
+                if (saved)
+                {
+                    NeuralNetworkAB<double> B = NeuralNetworkAB<double>.LoadFromFile("test");
+                    Console.WriteLine(string.Join(" , ", B.Run(XOR_Input[2])));
+                }
+                else
+                {
+                    Console.WriteLine("Don't saved, see debug");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Don't learned, see debug");
+            }
+            /*
             MNIST DB = new MNIST();
-            DB.LoadDB("", 60000, 10000);
+            DB.LoadDB(1000, 100);
             NeuralNetworkAB<byte> A = new NeuralNetworkAB<byte>(new int[] { 784, 793, 10 });//3920
             foreach (DigitImage i in DB.TrainingImages)
             {
@@ -20,36 +78,27 @@ namespace NeuralNetwork
                 output[i.Label] = 1;
                 A.Add(i.RawImage, output);
             }
-            A.Learn(1E-4);
-            A.Save("mnistDB.data");
-            Console.WriteLine(DB.TrainingImages[300].ToString());
-            double[] result = A.Run(DB.TrainingImages[300].RawImage);
-            List<double> res = new List<double>();
-            for(int i = 0; i < result.Length; i++)
+            A.Learn();
+            while (true)
             {
-                if (result[i] == 1)
-                    res.Add(i);
+                try
+                {
+                    int r = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine(DB.TestImages[r].ToString());
+                    double[] result = A.Run(DB.TestImages[r].RawImage);
+                    List<double> res = new List<double>();
+                    for (int i = 0; i < result.Length; i++)
+                        if (result[i] == 1)
+                            res.Add(i);
+                    Console.WriteLine(string.Join(" , ", res.ToArray()));
+                }
+                catch
+                {
+                    break;
+                }
             }
-            /*
-            double[][] XOR_I = new double[4][] {
-                new double[2] { 255, 255},
-                new double[2] { 200, 200 },
-                new double[2] { 155, 155 },
-                new double[2] { 100, 100 }
-            };
-            double[][] XOR_O = new double[4][] {
-                new double[1] { 1 },
-                new double[1] { 0.66 },
-                new double[1] { 0.33 },
-                new double[1] { 0 }
-            };
-            NeuralNetworkAB<double> A = new NeuralNetworkAB<double>(new int[] { 2, 3, 1 });
-            A.Input = XOR_I;
-            A.Output = XOR_O;
-            A.Learn(0.01);
-            
-            double[] result = A.Run(new double[2] { 200, 200 });*/
-            Console.WriteLine(string.Join(" , ", res.ToArray()));
+            A.Save("MNIST1000DB");
+            */
             Console.ReadKey();
         }
     }

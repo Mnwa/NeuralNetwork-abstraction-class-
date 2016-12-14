@@ -193,7 +193,7 @@ namespace NeuralNetwork
             get { return _TestDB.Images; }
         }
 
-        public Boolean LoadDB(string filesPath, int trainSize, int testSize)
+        public Boolean LoadDB(int trainSize, int testSize, string filesPath = "")
         {
             try
             {
@@ -204,6 +204,22 @@ namespace NeuralNetwork
 
                 _TrainingDB = new ReadMNIST(trainingLabelsPath, trainingImagesPath, trainSize);
                 _TestDB = new ReadMNIST(testLabelsPath, testImagesPath, testSize);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+        public Boolean LoadDB(string trainPath, string labelPath, int trainSize)
+        {
+            try
+            {
+                string trainingImagesPath = trainPath;
+                string trainingLabelsPath = labelPath;
+
+                _TrainingDB = new ReadMNIST(trainingLabelsPath, trainingImagesPath, trainSize);
                 return true;
             }
             catch (Exception ex)
